@@ -13,35 +13,18 @@ app.get('/gdphreg', async (req, res) => {
         const repeatPassword = password;
         const repeatEmail = fakeemail;
 
-        // Array of headers with Mozilla-like user-agents to rotate
-        const headersList = [
-            {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-                'Referer': 'https://gdph.ps.fhgdps.com/tools/account/registerAccount.php',
-                'Origin': 'https://gdph.ps.fhgdps.com/',
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0',
-                'Referer': 'https://gdph.ps.fhgdps.com/tools/account/registerAccount.php',
-                'Origin': 'https://gdph.ps.fhgdps.com/',
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; Trident/7.0; rv:11.0) like Gecko',
-                'Referer': 'https://gdph.ps.fhgdps.com/tools/account/registerAccount.php',
-                'Origin': 'https://gdph.ps.fhgdps.com/',
-                'Content-Type': 'application/x-www-form-urlencoded'
-            }
-            // Add more Mozilla-like headers as needed
-        ];
-
-        const randomHeader = headersList[Math.floor(Math.random() * headersList.length)];
+        // Single set of headers with Mozilla-like user-agent
+        const headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Firefox/91.0',
+            'Referer': 'https://gdph.ps.fhgdps.com/tools/account/registerAccount.php',
+            'Origin': 'https://gdph.ps.fhgdps.com/tools/account/registerAccount.php',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        };
 
         // Simulate POST request to register account
         const response = await axios.post('https://gdph.ps.fhgdps.com/tools/account/registerAccount.php',
             `username=${username}&password=${password}&repeatpassword=${repeatPassword}&email=${fakeemail}&repeatemail=${repeatEmail}`,
-            { headers: randomHeader }
+            { headers }
         );
 
         // Log the response URL
@@ -49,7 +32,7 @@ app.get('/gdphreg', async (req, res) => {
         console.log('Response URL:', responseUrl);
 
         // Make a GET request to the response URL
-        const getPageResponse = await axios.get(responseUrl, { headers: randomHeader });
+        const getPageResponse = await axios.get(responseUrl, { headers });
 
         // Load HTML content using cheerio
         const $ = cheerio.load(getPageResponse.data);

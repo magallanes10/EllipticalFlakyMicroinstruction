@@ -5,35 +5,44 @@ const cheerio = require('cheerio');
 const app = express();
 const PORT = 3000;
 
+const userAgents = [
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0',
+    // Add more user-agents here
+];
+
+function getRandomUserAgent() {
+    return userAgents[Math.floor(Math.random() * userAgents.length)];
+}
+
+async function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 app.get('/gdphreg', async (req, res) => {
     try {
         const { username, password, fakeemail } = req.query;
 
-        // Set headers with Mozilla-like user-agent
         const headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0',
+            'User-Agent': getRandomUserAgent(),
             'Referer': 'https://gdph.ps.fhgdps.com/tools/account/registerAccount.php',
             'Origin': 'https://gdph.ps.fhgdps.com/tools/account/registerAccount.php',
             'Content-Type': 'application/x-www-form-urlencoded'
         };
 
-        // Simulate POST request to register account
         const response = await axios.post('https://gdph.ps.fhgdps.com/tools/account/registerAccount.php',
             `username=${username}&password=${password}&repeatpassword=${password}&email=${fakeemail}&repeatemail=${fakeemail}`,
             { headers }
         );
 
-        // Log the response URL
         const responseUrl = response.request.res.responseUrl;
         console.log('Response URL:', responseUrl);
 
-        // Make a GET request to the response URL
-        const getPageResponse = await axios.get(responseUrl, { headers });
+        await delay(Math.random() * 5000); // Random delay between 0 to 5 seconds
 
-        // Load HTML content using cheerio
+        const getPageResponse = await axios.get(responseUrl, { headers });
         const $ = cheerio.load(getPageResponse.data);
 
-        // Check if "go to tools" or "tools" is detected
         const successTextDetected = $('body').text().toLowerCase().includes('go to tools') || $('body').text().toLowerCase().includes('tools');
 
         if (successTextDetected) {

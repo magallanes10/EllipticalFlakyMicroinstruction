@@ -9,13 +9,9 @@ app.get('/gdphreg', async (req, res) => {
     try {
         const { username, password, fakeemail } = req.query;
 
-        // Merge password and fake email for repeating values
-        const repeatPassword = password;
-        const repeatEmail = fakeemail;
-
-        // Single set of headers with Mozilla-like user-agent
+        // Set headers with Chrome-like user-agent
         const headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Firefox/91.0',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
             'Referer': 'https://gdph.ps.fhgdps.com/tools/account/registerAccount.php',
             'Origin': 'https://gdph.ps.fhgdps.com/tools/account/registerAccount.php',
             'Content-Type': 'application/x-www-form-urlencoded'
@@ -23,7 +19,7 @@ app.get('/gdphreg', async (req, res) => {
 
         // Simulate POST request to register account
         const response = await axios.post('https://gdph.ps.fhgdps.com/tools/account/registerAccount.php',
-            `username=${username}&password=${password}&repeatpassword=${repeatPassword}&email=${fakeemail}&repeatemail=${repeatEmail}`,
+            `username=${username}&password=${password}&repeatpassword=${password}&email=${fakeemail}&repeatemail=${fakeemail}`,
             { headers }
         );
 
